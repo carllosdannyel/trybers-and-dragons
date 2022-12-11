@@ -1,12 +1,14 @@
 import Race from './Race';
 
 class Halfling extends Race {
-  private _maxLifePoints: number;
   private static _instances = 0;
 
-  constructor(name: string, dexterity: number) {
+  constructor(
+    name: string,
+    dexterity: number,
+    private _maxLifePoints: number = 60,
+  ) {
     super(name, dexterity);
-    this._maxLifePoints = 60;
     Halfling.incrementInstances();
   }
 
