@@ -4,15 +4,15 @@ import Fighter from './Fighter';
 import Race, { Elf } from './Races';
 import getRandomInt from './utils';
 
-class Character implements Fighter {
-  private readonly _race: Race;
-  private readonly _archetype: Archetype;
+export default class Character implements Fighter {
+  private _race: Race;
+  private _archetype: Archetype;
   private _maxLifePoints: number;
   private _lifePoints: number;
   private _strength: number;
   private _defense: number;
-  private readonly _energy: Energy;
   private _dexterity: number;
+  private _energy: Energy;
 
   constructor(name: string) {
     this._dexterity = getRandomInt(1, 10);
@@ -61,19 +61,13 @@ class Character implements Fighter {
 
   receiveDamage(attackPoints: number): number {
     const damage = attackPoints - this._defense;
-    if (damage > 0) this.condition1(damage);
+    const decrementValue = this._lifePoints - damage;
+    const newValue = -1;
+
+    this._lifePoints = damage > 0 && this._lifePoints - damage > 0 
+      ? decrementValue : newValue;
+
     return this._lifePoints;
-  }
-
-  condition1(damage: number): void {
-    if ((this._lifePoints - damage) > 0) {
-      return this.condition2(damage);
-    } 
-    this._lifePoints = -1;
-  }
-
-  condition2(damage: number): void {
-    this._lifePoints -= damage;
   }
 
   attack(enemy: Fighter): void {
@@ -81,21 +75,14 @@ class Character implements Fighter {
   }
 
   levelUp(): void {
-    this.incrementMaxLifePoints(getRandomInt(1, 10));
+    const newValue = this._maxLifePoints + getRandomInt(1, 10);
+    const totalPoints = this._race.maxLifePoints;
+
+    this._maxLifePoints = newValue < totalPoints ? newValue : totalPoints;
     this._strength += getRandomInt(1, 10);
     this._dexterity += getRandomInt(1, 10);
     this._defense += getRandomInt(1, 10);
     this._energy.amount = 10;
     this._lifePoints = this._maxLifePoints;
   }
-
-  incrementMaxLifePoints(value: number) {
-    if ((this._maxLifePoints + value) < this._race.maxLifePoints) {
-      this._maxLifePoints += value;
-      return;
-    }
-    this._maxLifePoints = this._race.maxLifePoints;
-  }
 }
-
-export default Character;
